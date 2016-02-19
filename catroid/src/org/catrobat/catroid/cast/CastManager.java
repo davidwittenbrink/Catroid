@@ -54,6 +54,7 @@ import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.formulaeditor.Sensors;
 import org.catrobat.catroid.stage.StageActivity;
 import org.catrobat.catroid.stage.StageListener;
+import org.catrobat.catroid.ui.adapter.CastDevicesAdapter;
 import org.catrobat.catroid.ui.dialogs.SelectCastDialog;
 
 import java.util.ArrayList;
@@ -62,14 +63,14 @@ import java.util.EnumMap;
 public final class CastManager {
 
 	private static final CastManager INSTANCE = new CastManager();
-	private final ArrayList<MediaRouter.RouteInfo> routeInfos = new ArrayList<MediaRouter.RouteInfo>();
+	private final ArrayList<MediaRouter.RouteInfo> routeInfos = new ArrayList<>();
 	StageActivity gamepadActivity;
 	private EnumMap<Sensors, Boolean> isGamepadButtonPressed = new EnumMap<>(Sensors.class);
 	private MediaRouter mediaRouter;
 	private MediaRouteSelector mediaRouteSelector;
 	private MyMediaRouterCallback callback;
 	private ArrayList<String> routeNames = new ArrayList<>();
-	private ArrayAdapter<String> deviceAdapter;
+	private ArrayAdapter<MediaRouter.RouteInfo> deviceAdapter;
 	private CastDevice selectedDevice;
 	private boolean isConnected = false;
 	private GLSurfaceView20 stageViewDisplayedOnCast;
@@ -132,7 +133,8 @@ public final class CastManager {
 		if (mediaRouter != null) {
 			return;
 		}
-		deviceAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, routeNames);
+        deviceAdapter = new CastDevicesAdapter(activity, R.layout.fragment_cast_device_list_item, routeInfos);
+		//deviceAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, routeNames);
 		mediaRouter = MediaRouter.getInstance(activity.getApplicationContext());
 		mediaRouteSelector = new MediaRouteSelector.Builder()
 				.addControlCategory(CastMediaControlIntent.categoryForCast(Constants.REMOTE_DISPLAY_APP_ID))
@@ -184,12 +186,16 @@ public final class CastManager {
 		}
 	}
 
-	private void handleGamepadTouch(ImageButton button, MotionEvent event) {
+	private synchronized void handleGamepadTouch(ImageButton button, MotionEvent event) {
 
 		if (event.getAction() != MotionEvent.ACTION_DOWN && event.getAction() != MotionEvent.ACTION_UP) {
 			// We only care about the event when a gamepad button is pressed and when a gamepad button is unpressed
 			return;
 		}
+
+        if (gamepadActivity == null) {
+            return;
+        }
 
 		boolean isActionDown = (event.getAction() == MotionEvent.ACTION_DOWN);
 		String buttonPressedName;
