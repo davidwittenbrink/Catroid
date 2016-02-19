@@ -26,11 +26,14 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.DialogFragment;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.v7.media.MediaRouter;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ListView;
 
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.cast.CastManager;
@@ -39,11 +42,14 @@ public class SelectCastDialog extends DialogFragment {
 
 	private static final String DIALOG_TAG = "cast_device_selector";
 	ArrayAdapter<MediaRouter.RouteInfo> deviceAdapter;
-	Context context;
+	Activity activity;
 
-	public void openDialog(Activity activity, ArrayAdapter<MediaRouter.RouteInfo> deviceAdapter) {
-		this.deviceAdapter = deviceAdapter;
-		context = activity;
+	public SelectCastDialog(ArrayAdapter<MediaRouter.RouteInfo> adapter, Activity activity) {
+		this.activity = activity;
+		this.deviceAdapter = adapter;
+	}
+
+	public void openDialog() {
 		show(activity.getFragmentManager(), DIALOG_TAG);
 	}
 
@@ -55,18 +61,30 @@ public class SelectCastDialog extends DialogFragment {
 
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceState) {
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setTitle(getString(R.string.cast_device_selector_dialog_title));
-		builder.setAdapter(deviceAdapter, new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
+
+		LayoutInflater inflater = getActivity().getLayoutInflater();
+		final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+		View view = inflater.inflate(R.layout.dialog_select_cast, null);
+		ListView listView = (ListView) view.findViewById(R.id.cast_device_list_view);
+		listView.setAdapter(deviceAdapter);
+		listView.setDivider(null);
+
+		builder.setView(view).setTitle(getString(R.string.cast_device_selector_dialog_title));
+		final AlertDialog dialog = builder.create();
+
+		listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
 				synchronized (this) { //TODO Sync needed?
-					MediaRouter.RouteInfo routeInfo = CastManager.getInstance().getRouteInfos().get(which);
+					MediaRouter.RouteInfo routeInfo = CastManager.getInstance().getRouteInfos().get(position);
 					CastManager.getInstance().addCallback();
 					CastManager.getInstance().startCastButtonAnimation();
 					CastManager.getInstance().selectRoute(routeInfo);
+					dialog.dismiss();
 				}
 			}
 		});
-		return builder.create();
+
+		return dialog;
 	}
 }

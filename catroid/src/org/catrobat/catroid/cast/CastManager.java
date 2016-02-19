@@ -133,7 +133,7 @@ public final class CastManager {
 		if (mediaRouter != null) {
 			return;
 		}
-        deviceAdapter = new CastDevicesAdapter(activity, R.layout.fragment_cast_device_list_item, routeInfos);
+		deviceAdapter = new CastDevicesAdapter(activity, R.layout.fragment_cast_device_list_item, routeInfos);
 		//deviceAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, routeNames);
 		mediaRouter = MediaRouter.getInstance(activity.getApplicationContext());
 		mediaRouteSelector = new MediaRouteSelector.Builder()
@@ -193,9 +193,9 @@ public final class CastManager {
 			return;
 		}
 
-        if (gamepadActivity == null) {
-            return;
-        }
+		if (gamepadActivity == null) {
+			return;
+		}
 
 		boolean isActionDown = (event.getAction() == MotionEvent.ACTION_DOWN);
 		String buttonPressedName;
@@ -271,8 +271,8 @@ public final class CastManager {
 			builder.create().show();
 		} else {
 			mediaRouter.addCallback(mediaRouteSelector, callback, MediaRouter.CALLBACK_FLAG_PERFORM_ACTIVE_SCAN);
-			SelectCastDialog dialog = new SelectCastDialog();
-			dialog.openDialog(activity, deviceAdapter);
+			SelectCastDialog dialog = new SelectCastDialog(deviceAdapter, activity);
+			dialog.openDialog();
 		}
 	}
 

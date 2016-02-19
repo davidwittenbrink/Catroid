@@ -37,22 +37,22 @@ import java.util.List;
 
 public class CastDevicesAdapter extends ArrayAdapter<MediaRouter.RouteInfo> {
 
-    public CastDevicesAdapter(Context context, int resource, List<MediaRouter.RouteInfo> items) {
-        super(context, resource, items);
-    }
+	public CastDevicesAdapter(Context context, int resource, List<MediaRouter.RouteInfo> items) {
+		super(context, resource, items);
+	}
 
-    @Override
-    public View getView(int position, View convertView, ViewGroup parent) {
+	@Override
+	public View getView(int position, View convertView, ViewGroup parent) {
 
-        if (convertView == null) {
-            return LayoutInflater.from(getContext()).inflate(R.layout.fragment_cast_device_list_item, null);
-        }
+		if (convertView == null) {
+			convertView = LayoutInflater.from(getContext()).inflate(R.layout.fragment_cast_device_list_item, null);
+		}
 
-        MediaRouter.RouteInfo routeInfo = CastManager.getInstance().getRouteInfos().get(position);
+		MediaRouter.RouteInfo routeInfo = CastManager.getInstance().getRouteInfos().get(position);
 
-        ((TextView) convertView.findViewById(R.id.cast_device_name)).setText(routeInfo.getName());
-        ((TextView) convertView.findViewById(R.id.cast_device_casting_to)).setText(routeInfo.getDescription());
+		((TextView) convertView.findViewById(R.id.cast_device_name)).setText(routeInfo.getName());
+		//((TextView) convertView.findViewById(R.id.cast_device_casting_to)).setText(routeInfo.getDescription());
 
-        return convertView;
-    }
+		return convertView;
+	}
 }
