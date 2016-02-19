@@ -38,10 +38,10 @@ import org.catrobat.catroid.cast.CastManager;
 public class SelectCastDialog extends DialogFragment {
 
 	private static final String DIALOG_TAG = "cast_device_selector";
-	ArrayAdapter<String> deviceAdapter;
+	ArrayAdapter<MediaRouter.RouteInfo> deviceAdapter;
 	Context context;
 
-	public void openDialog(Activity activity, ArrayAdapter<String> deviceAdapter) {
+	public void openDialog(Activity activity, ArrayAdapter<MediaRouter.RouteInfo> deviceAdapter) {
 		this.deviceAdapter = deviceAdapter;
 		context = activity;
 		show(activity.getFragmentManager(), DIALOG_TAG);
