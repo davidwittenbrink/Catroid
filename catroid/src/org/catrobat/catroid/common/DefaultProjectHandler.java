@@ -23,12 +23,10 @@
 package org.catrobat.catroid.common;
 
 import android.content.Context;
-import android.hardware.Sensor;
 import android.util.Log;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
-import org.catrobat.catroid.content.BroadcastScript;
 import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Script;
 import org.catrobat.catroid.content.Sprite;
@@ -36,12 +34,10 @@ import org.catrobat.catroid.content.StartScript;
 import org.catrobat.catroid.content.WhenGamepadButtonScript;
 import org.catrobat.catroid.content.WhenScript;
 import org.catrobat.catroid.content.bricks.BrickBaseType;
-import org.catrobat.catroid.content.bricks.BroadcastBrick;
 import org.catrobat.catroid.content.bricks.ChangeXByNBrick;
 import org.catrobat.catroid.content.bricks.ChangeYByNBrick;
 import org.catrobat.catroid.content.bricks.ForeverBrick;
 import org.catrobat.catroid.content.bricks.GlideToBrick;
-import org.catrobat.catroid.content.bricks.HideBrick;
 import org.catrobat.catroid.content.bricks.IfLogicBeginBrick;
 import org.catrobat.catroid.content.bricks.IfLogicElseBrick;
 import org.catrobat.catroid.content.bricks.IfLogicEndBrick;
@@ -55,15 +51,12 @@ import org.catrobat.catroid.content.bricks.SetSizeToBrick;
 import org.catrobat.catroid.content.bricks.SetVariableBrick;
 import org.catrobat.catroid.content.bricks.TurnLeftBrick;
 import org.catrobat.catroid.content.bricks.WaitBrick;
-import org.catrobat.catroid.content.bricks.WhenGampadButtonBrick;
-import org.catrobat.catroid.devices.mindstorms.nxt.sensors.NXTSensor;
 import org.catrobat.catroid.drone.DroneBrickFactory;
 import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.Formula;
 import org.catrobat.catroid.formulaeditor.FormulaElement;
 import org.catrobat.catroid.formulaeditor.FormulaElement.ElementType;
 import org.catrobat.catroid.formulaeditor.Functions;
-import org.catrobat.catroid.formulaeditor.Operators;
 import org.catrobat.catroid.formulaeditor.Sensors;
 import org.catrobat.catroid.formulaeditor.UserVariable;
 import org.catrobat.catroid.io.StorageHandler;
@@ -535,8 +528,8 @@ public final class DefaultProjectHandler {
 			ForeverBrick foreverBrickBroadcast = new ForeverBrick();
 			birdScriptBroadcast.addBrick(foreverBrickBroadcast);
 			//Up
-			IfLogicBeginBrick ifLogicBeginBrickUp = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_UP_PRESSED.name(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickUp = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_UP_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickUp);
 			ChangeYByNBrick changeYByNBrickUp = new ChangeYByNBrick(5);
 			birdScriptBroadcast.addBrick(changeYByNBrickUp);
@@ -547,8 +540,8 @@ public final class DefaultProjectHandler {
 			IfLogicEndBrick ifLogicEndBrickUp = new IfLogicEndBrick(ifLogicElseBrickUp, ifLogicBeginBrickUp);
 			birdScriptBroadcast.addBrick(ifLogicEndBrickUp);
 			//Down
-			IfLogicBeginBrick ifLogicBeginBrickDown = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_DOWN_PRESSED.name(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickDown = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_DOWN_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickDown);
 			ChangeYByNBrick changeYByNBrickDown = new ChangeYByNBrick(-5);
 			birdScriptBroadcast.addBrick(changeYByNBrickDown);
@@ -558,11 +551,11 @@ public final class DefaultProjectHandler {
 			IfLogicEndBrick ifLogicEndBrickDown = new IfLogicEndBrick(ifLogicElseBrickDown, ifLogicBeginBrickDown);
 			birdScriptBroadcast.addBrick(ifLogicEndBrickDown);
 			//Left
-			IfLogicBeginBrick ifLogicBeginBrickLeft = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_LEFT_PRESSED.name(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickLeft = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_LEFT_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickLeft);
-			SetVariableBrick setVariableBrick1 = new SetVariableBrick(new Formula
-					(new FormulaElement(ElementType.FUNCTION, Functions.TRUE.name(), null)), direction);
+			SetVariableBrick setVariableBrick1 = new SetVariableBrick(new Formula(
+					new FormulaElement(ElementType.FUNCTION, Functions.TRUE.name(), null)), direction);
 			birdScriptBroadcast.addBrick(setVariableBrick1);
 			SetLookBrick setLookBrickUpLeft = new SetLookBrick();
 			setLookBrickUpLeft.setLook(birdWingUpLeftLookData);
@@ -575,11 +568,11 @@ public final class DefaultProjectHandler {
 			IfLogicEndBrick ifLogicEndBrickLeft = new IfLogicEndBrick(ifLogicElseBrickLeft, ifLogicBeginBrickLeft);
 			birdScriptBroadcast.addBrick(ifLogicEndBrickLeft);
 			//Right
-			IfLogicBeginBrick ifLogicBeginBrickRight = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_RIGHT_PRESSED.name(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickRight = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_RIGHT_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickRight);
-			SetVariableBrick setVariableBrick2 = new SetVariableBrick(new Formula
-					(new FormulaElement(ElementType.FUNCTION, Functions.FALSE.name(), null)), direction);
+			SetVariableBrick setVariableBrick2 = new SetVariableBrick(new Formula(
+					new FormulaElement(ElementType.FUNCTION, Functions.FALSE.name(), null)), direction);
 			birdScriptBroadcast.addBrick(setVariableBrick2);
 			SetLookBrick setLookBrickUpRight = new SetLookBrick();
 			setLookBrickUpRight.setLook(birdWingUpLookData);
@@ -599,8 +592,8 @@ public final class DefaultProjectHandler {
 			birdSprite.addScript(birdScriptBroadcast);
 
 			Script birdScriptButtonA = new WhenGamepadButtonScript(context.getString(R.string.cast_gamepad_A));
-			IfLogicBeginBrick ifLogicBeginBrickBirdRight = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.USER_VARIABLE, direction.getName(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickBirdRight = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.USER_VARIABLE, direction.getName(), null)));
 			birdScriptButtonA.addBrick(ifLogicBeginBrickBirdRight);
 			//Bird wings left
 			SetLookBrick setLookBrickDownLeft = new SetLookBrick();
@@ -629,8 +622,8 @@ public final class DefaultProjectHandler {
 			birdSprite.addScript(birdScriptButtonA);
 
 			Script birdScriptButtonB = new WhenGamepadButtonScript(context.getString(R.string.cast_gamepad_B));
-			IfLogicBeginBrick ifLogicBeginBrickBirdLeft = new IfLogicBeginBrick(new Formula
-					(new FormulaElement(ElementType.USER_VARIABLE, direction.getName(), null)));
+			IfLogicBeginBrick ifLogicBeginBrickBirdLeft = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.USER_VARIABLE, direction.getName(), null)));
 			birdScriptButtonB.addBrick(ifLogicBeginBrickBirdLeft);
 			//Bird sound
 			PlaySoundBrick playSoundBrickBird1 = new PlaySoundBrick();
@@ -665,7 +658,6 @@ public final class DefaultProjectHandler {
 		return defaultProject;
 	}
 
-
 	public static Project createAndSaveDefaultProject(String projectName, Context context, boolean landscapeMode) throws
 			IOException,
 			IllegalArgumentException {
@@ -691,8 +683,6 @@ public final class DefaultProjectHandler {
 		defaultProject.setDeviceData(context); // density anywhere here
 		StorageHandler.getInstance().saveProject(defaultProject);
 		ProjectManager.getInstance().setProject(defaultProject);
-
-
 
 		File backgroundFile;
 		File cloudFile;

@@ -29,7 +29,6 @@ import android.graphics.Matrix;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.common.ScreenValues;
-import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.io.StorageHandler;
 
 import java.io.File;
