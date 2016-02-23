@@ -161,7 +161,7 @@ public class WhenGampadButtonBrick extends ScriptBrick {
 			gamepadPressedBrickTextView.setTextColor(color);
 			gamepadBrickSpinner.getBackground().setAlpha(alphaValue);
 
-			this.alphaValue = (alphaValue);
+			this.alphaValue = alphaValue;
 		}
 
 		return view;

@@ -244,7 +244,7 @@ public class CategoryBricksFactory {
 
 	private List<Brick> setupChromecastCategoryList() {
 		List<Brick> chromecastBrickList = new ArrayList<Brick>();
-		chromecastBrickList.add((new WhenGampadButtonBrick(null)));
+		chromecastBrickList.add(new WhenGampadButtonBrick(null));
 		chromecastBrickList.add(new SetVariableBrick(Sensors.GAMEPAD_A_PRESSED));
 		chromecastBrickList.add(new SetVariableBrick(Sensors.GAMEPAD_B_PRESSED));
 		chromecastBrickList.add(new SetVariableBrick(Sensors.GAMEPAD_UP_PRESSED));
