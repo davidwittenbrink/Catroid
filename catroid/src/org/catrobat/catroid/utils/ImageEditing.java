@@ -159,7 +159,7 @@ public final class ImageEditing {
 			options.inJustDecodeBounds = true;
 			BitmapFactory.decodeResource(context.getResources(), resourceId, options);
 
-			if(ProjectManager.getInstance().getCurrentProject().isCastProject()) {
+			if (ProjectManager.getInstance().getCurrentProject().isCastProject()) {
 				return calculateScaleFactor(options.outWidth, options.outHeight, ScreenValues.CAST_SCREEN_WIDTH,
 						ScreenValues.CAST_SCREEN_HEIGHT, true);
 			} else {

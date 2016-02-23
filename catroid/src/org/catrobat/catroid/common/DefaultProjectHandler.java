@@ -396,7 +396,6 @@ public final class DefaultProjectHandler {
 		String tweet1 = context.getString(R.string.default_cast_project_sprites_tweet_1);
 		String tweet2 = context.getString(R.string.default_cast_project_sprites_tweet_2);
 
-
 		String varDirection = context.getString(R.string.default_cast_project_var_direction);
 
 		File backgroundFile;
@@ -479,11 +478,6 @@ public final class DefaultProjectHandler {
 
 			userVariables.addProjectUserVariable(varDirection);
 			UserVariable direction = userVariables.getUserVariable(varDirection, backgroundSprite);
-
-			/*Script startScript = new StartScript();
-			BroadcastBrick broadcastScriptStart = new BroadcastBrick("start");
-			startScript.addBrick(broadcastScriptStart);
-			backgroundSprite.addScript(startScript);*/
 
 			//Clouds
 			Sprite cloudSprite1 = new Sprite(cloudSpriteName1);
@@ -655,7 +649,6 @@ public final class DefaultProjectHandler {
 			defaultProject.addSprite(birdSprite);
 			///Bird
 
-
 			ProjectManager.getInstance().getFileChecksumContainer().addChecksum(birdWingUpLookData.getChecksum(), birdWingUpLookData.getAbsolutePath());
 			ProjectManager.getInstance().getFileChecksumContainer().addChecksum(birdWingDownLookData.getChecksum(), birdWingDownLookData.getAbsolutePath());
 			ProjectManager.getInstance().getFileChecksumContainer().addChecksum(birdWingUpLeftLookData.getChecksum(), birdWingUpLeftLookData.getAbsolutePath());
@@ -668,7 +661,6 @@ public final class DefaultProjectHandler {
 		}
 
 		StorageHandler.getInstance().saveProject(defaultProject);
-
 
 		return defaultProject;
 	}
