@@ -198,7 +198,7 @@ public class CategoryBricksFactory {
 			controlBrickList.add(new PhiroIfLogicBeginBrick());
 		}
 
-		if (SettingsActivity.isCastSharedPreferenceEnabled(context)) {
+		if (ProjectManager.getInstance().getCurrentProject().isCastProject()) {
 			controlBrickList.add(new WhenGampadButtonBrick(null));
 		}
 
