@@ -62,6 +62,7 @@ import org.catrobat.catroid.ui.dialogs.SignInDialog;
 import org.catrobat.catroid.ui.dialogs.UploadProjectDialog;
 import org.catrobat.catroid.utils.Utils;
 
+import java.io.Console;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -297,6 +298,8 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 			project = DefaultProjectHandler.createAndSaveEmptyProject(projectName, context, landscapeMode, castEnabled);
 		} else if (drone) {
 			project = DefaultProjectHandler.createAndSaveDefaultDroneProject(projectName, context, landscapeMode);
+		} else if (castEnabled) {
+			project = DefaultProjectHandler.createAndSaveDefaultCastProject(projectName, context);
 		} else {
 			project = DefaultProjectHandler.createAndSaveDefaultProject(projectName, context, landscapeMode);
 		}
