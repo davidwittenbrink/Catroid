@@ -292,11 +292,12 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 			throws IllegalArgumentException, IOException {
 		fileChecksumContainer = new FileChecksumContainer();
 
-		//TODO: Initialize cast project
 		if (empty) {
 			project = DefaultProjectHandler.createAndSaveEmptyProject(projectName, context, landscapeMode, castEnabled);
 		} else if (drone) {
 			project = DefaultProjectHandler.createAndSaveDefaultDroneProject(projectName, context, landscapeMode);
+		} else if (castEnabled) {
+			project = DefaultProjectHandler.createAndSaveDefaultCastProject(projectName, context);
 		} else {
 			project = DefaultProjectHandler.createAndSaveDefaultProject(projectName, context, landscapeMode);
 		}
