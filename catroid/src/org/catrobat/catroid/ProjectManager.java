@@ -305,6 +305,11 @@ public final class ProjectManager implements OnLoadProjectCompleteListener, OnCh
 		currentScript = null;
 	}
 
+	public void initializeNewProject(String projectName, Context context, boolean empty, boolean drone, boolean landscapeMode)
+			throws IllegalArgumentException, IOException {
+		initializeNewProject(projectName, context, empty, drone, landscapeMode, false);
+	}
+
 	public void initializeNewProject(String projectName, Context context, boolean empty, boolean drone)
 			throws IllegalArgumentException, IOException {
 		initializeNewProject(projectName, context, empty, drone, false, false);
