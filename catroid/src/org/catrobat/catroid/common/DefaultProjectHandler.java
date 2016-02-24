@@ -38,6 +38,7 @@ import org.catrobat.catroid.content.bricks.ChangeXByNBrick;
 import org.catrobat.catroid.content.bricks.ChangeYByNBrick;
 import org.catrobat.catroid.content.bricks.ForeverBrick;
 import org.catrobat.catroid.content.bricks.GlideToBrick;
+import org.catrobat.catroid.content.bricks.HideBrick;
 import org.catrobat.catroid.content.bricks.IfLogicBeginBrick;
 import org.catrobat.catroid.content.bricks.IfLogicElseBrick;
 import org.catrobat.catroid.content.bricks.IfLogicEndBrick;
@@ -51,12 +52,14 @@ import org.catrobat.catroid.content.bricks.SetSizeToBrick;
 import org.catrobat.catroid.content.bricks.SetVariableBrick;
 import org.catrobat.catroid.content.bricks.TurnLeftBrick;
 import org.catrobat.catroid.content.bricks.WaitBrick;
+import org.catrobat.catroid.devices.mindstorms.nxt.sensors.NXTSensor;
 import org.catrobat.catroid.drone.DroneBrickFactory;
 import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.Formula;
 import org.catrobat.catroid.formulaeditor.FormulaElement;
 import org.catrobat.catroid.formulaeditor.FormulaElement.ElementType;
 import org.catrobat.catroid.formulaeditor.Functions;
+import org.catrobat.catroid.formulaeditor.Operators;
 import org.catrobat.catroid.formulaeditor.Sensors;
 import org.catrobat.catroid.formulaeditor.UserVariable;
 import org.catrobat.catroid.io.StorageHandler;
@@ -506,6 +509,7 @@ public final class DefaultProjectHandler {
 
 			LoopEndlessBrick loopEndlessBrick = new LoopEndlessBrick(foreverBrick);
 			cloudSpriteScript1.addBrick(loopEndlessBrick);
+
 			cloudSprite1.addScript(cloudSpriteScript1);
 			cloudSpriteScript2.addBrick(loopEndlessBrick);
 			cloudSprite2.addScript(cloudSpriteScript2);
@@ -523,6 +527,16 @@ public final class DefaultProjectHandler {
 			birdSprite.getSoundList().add(soundInfo1);
 			birdSprite.getSoundList().add(soundInfo2);
 
+			FormulaElement minX = new FormulaElement(ElementType.NUMBER, "-640", null);
+			FormulaElement maxX = new FormulaElement(ElementType.NUMBER, "640", null);
+			FormulaElement minY = new FormulaElement(ElementType.NUMBER, "-360", null);
+			FormulaElement maxY = new FormulaElement(ElementType.NUMBER, "360", null);
+
+			FormulaElement birdX = new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_X.name(), null);
+			FormulaElement birdY = new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_Y.name(), null);
+
+			FormulaElement zero = new FormulaElement(ElementType.NUMBER, "0", null);
+
 			Script birdScriptBroadcast = new StartScript();
 
 			ForeverBrick foreverBrickBroadcast = new ForeverBrick();
@@ -531,10 +545,19 @@ public final class DefaultProjectHandler {
 			IfLogicBeginBrick ifLogicBeginBrickUp = new IfLogicBeginBrick(new Formula(
 					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_UP_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickUp);
+			IfLogicBeginBrick ifLogicBeginBrickMaxY = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.OPERATOR, Operators.EQUAL.name(), null, maxY, birdY)));
+			birdScriptBroadcast.addBrick(ifLogicBeginBrickMaxY);
+			PlaceAtBrick placeTop = new PlaceAtBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_X.name(), null)),new Formula(
+					new FormulaElement(ElementType.NUMBER, "-360", null)));
+			birdScriptBroadcast.addBrick(placeTop);
+			IfLogicElseBrick ifLogicElseBrickMaxY = new IfLogicElseBrick(ifLogicBeginBrickMaxY);
+			birdScriptBroadcast.addBrick(ifLogicElseBrickMaxY);
+			IfLogicEndBrick ifLogicEndBrickMaxY = new IfLogicEndBrick(ifLogicElseBrickMaxY, ifLogicBeginBrickMaxY);
+			birdScriptBroadcast.addBrick(ifLogicEndBrickMaxY);
 			ChangeYByNBrick changeYByNBrickUp = new ChangeYByNBrick(5);
 			birdScriptBroadcast.addBrick(changeYByNBrickUp);
-			IfOnEdgeBounceBrick edgeBounceBrick = new IfOnEdgeBounceBrick();
-			birdScriptBroadcast.addBrick(edgeBounceBrick);
 			IfLogicElseBrick ifLogicElseBrickUp = new IfLogicElseBrick(ifLogicBeginBrickUp);
 			birdScriptBroadcast.addBrick(ifLogicElseBrickUp);
 			IfLogicEndBrick ifLogicEndBrickUp = new IfLogicEndBrick(ifLogicElseBrickUp, ifLogicBeginBrickUp);
@@ -543,9 +566,19 @@ public final class DefaultProjectHandler {
 			IfLogicBeginBrick ifLogicBeginBrickDown = new IfLogicBeginBrick(new Formula(
 					new FormulaElement(ElementType.SENSOR, Sensors.GAMEPAD_DOWN_PRESSED.name(), null)));
 			birdScriptBroadcast.addBrick(ifLogicBeginBrickDown);
+			IfLogicBeginBrick ifLogicBeginBrickMinY = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.OPERATOR, Operators.EQUAL.name(), null, minY, birdY)));
+			birdScriptBroadcast.addBrick(ifLogicBeginBrickMinY);
+			PlaceAtBrick placeBottom = new PlaceAtBrick(new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_X.name(), null)),new Formula(
+					new FormulaElement(ElementType.NUMBER, "360", null)));
+			birdScriptBroadcast.addBrick(placeBottom);
+			IfLogicElseBrick ifLogicElseBrickMinY = new IfLogicElseBrick(ifLogicBeginBrickMinY);
+			birdScriptBroadcast.addBrick(ifLogicElseBrickMinY);
+			IfLogicEndBrick ifLogicEndBrickMinY = new IfLogicEndBrick(ifLogicElseBrickMinY, ifLogicBeginBrickMinY);
+			birdScriptBroadcast.addBrick(ifLogicEndBrickMinY);
 			ChangeYByNBrick changeYByNBrickDown = new ChangeYByNBrick(-5);
 			birdScriptBroadcast.addBrick(changeYByNBrickDown);
-			birdScriptBroadcast.addBrick(edgeBounceBrick);
 			IfLogicElseBrick ifLogicElseBrickDown = new IfLogicElseBrick(ifLogicBeginBrickDown);
 			birdScriptBroadcast.addBrick(ifLogicElseBrickDown);
 			IfLogicEndBrick ifLogicEndBrickDown = new IfLogicEndBrick(ifLogicElseBrickDown, ifLogicBeginBrickDown);
@@ -560,9 +593,19 @@ public final class DefaultProjectHandler {
 			SetLookBrick setLookBrickUpLeft = new SetLookBrick();
 			setLookBrickUpLeft.setLook(birdWingUpLeftLookData);
 			birdScriptBroadcast.addBrick(setLookBrickUpLeft);
+			IfLogicBeginBrick ifLogicBeginBrickMinX = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.OPERATOR, Operators.EQUAL.name(), null, minX, birdX)));
+			birdScriptBroadcast.addBrick(ifLogicBeginBrickMinX);
+			PlaceAtBrick placeRight = new PlaceAtBrick(new Formula(
+					new FormulaElement(ElementType.NUMBER, "640", null)),new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_Y.name(), null)));
+			birdScriptBroadcast.addBrick(placeRight);
+			IfLogicElseBrick ifLogicElseBrickMinX = new IfLogicElseBrick(ifLogicBeginBrickMinX);
+			birdScriptBroadcast.addBrick(ifLogicElseBrickMinX);
+			IfLogicEndBrick ifLogicEndBrickMinX = new IfLogicEndBrick(ifLogicElseBrickMinX, ifLogicBeginBrickMinX);
+			birdScriptBroadcast.addBrick(ifLogicEndBrickMinX);
 			ChangeXByNBrick changeXByNBrickLeft = new ChangeXByNBrick(-5);
 			birdScriptBroadcast.addBrick(changeXByNBrickLeft);
-			birdScriptBroadcast.addBrick(edgeBounceBrick);
 			IfLogicElseBrick ifLogicElseBrickLeft = new IfLogicElseBrick(ifLogicBeginBrickLeft);
 			birdScriptBroadcast.addBrick(ifLogicElseBrickLeft);
 			IfLogicEndBrick ifLogicEndBrickLeft = new IfLogicEndBrick(ifLogicElseBrickLeft, ifLogicBeginBrickLeft);
@@ -577,9 +620,19 @@ public final class DefaultProjectHandler {
 			SetLookBrick setLookBrickUpRight = new SetLookBrick();
 			setLookBrickUpRight.setLook(birdWingUpLookData);
 			birdScriptBroadcast.addBrick(setLookBrickUpRight);
+			IfLogicBeginBrick ifLogicBeginBrickMaxX = new IfLogicBeginBrick(new Formula(
+					new FormulaElement(ElementType.OPERATOR, Operators.EQUAL.name(), null, maxX, birdX)));
+			birdScriptBroadcast.addBrick(ifLogicBeginBrickMaxX);
+			PlaceAtBrick placeLeft = new PlaceAtBrick(new Formula(
+					new FormulaElement(ElementType.NUMBER, "-640", null)),new Formula(
+					new FormulaElement(ElementType.SENSOR, Sensors.OBJECT_Y.name(), null)));
+			birdScriptBroadcast.addBrick(placeLeft);
+			IfLogicElseBrick ifLogicElseBrickMaxX = new IfLogicElseBrick(ifLogicBeginBrickMaxX);
+			birdScriptBroadcast.addBrick(ifLogicElseBrickMaxX);
+			IfLogicEndBrick ifLogicEndBrickMaxX = new IfLogicEndBrick(ifLogicElseBrickMaxX, ifLogicBeginBrickMaxX);
+			birdScriptBroadcast.addBrick(ifLogicEndBrickMaxX);
 			ChangeXByNBrick changeXByNBrickRight = new ChangeXByNBrick(5);
 			birdScriptBroadcast.addBrick(changeXByNBrickRight);
-			birdScriptBroadcast.addBrick(edgeBounceBrick);
 			IfLogicElseBrick ifLogicElseBrickRight = new IfLogicElseBrick(ifLogicBeginBrickRight);
 			birdScriptBroadcast.addBrick(ifLogicElseBrickRight);
 			IfLogicEndBrick ifLogicEndBrickRight = new IfLogicEndBrick(ifLogicElseBrickRight, ifLogicBeginBrickRight);
