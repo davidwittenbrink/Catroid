@@ -22,6 +22,7 @@
  */
 package org.catrobat.catroid.uitest.cast;
 
+import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.RadioButton;
 
@@ -147,5 +148,58 @@ public class CastSettingsActivityTest extends BaseActivityInstrumentationTestCas
 		findResults.add(solo.searchText(solo.getString(R.string.formula_editor_sensor_gamepad_right_pressed)));
 
 		assertFalse("Not all cast category bricks shown", findResults.contains(false));
+	}
+	public void testCreateExampleCastProgram() {
+		solo.waitForActivity(MainMenuActivity.class);
+		solo.clickOnText(solo.getString(R.string.main_menu_new));
+		solo.waitForText(solo.getString(R.string.new_project_default));
+		solo.enterText(0, UiTestUtils.PROJECTNAME1);
+		solo.clickOnText(solo.getString(R.string.new_project_default));
+		solo.clickOnText(solo.getString(R.string.ok));
+		solo.waitForText(solo.getString(R.string.ok)); // Wait for next dialog
+
+		assertTrue("dialog with correct title not loaded in 5 seconds",
+				solo.waitForText(solo.getString(R.string.project_select_screen_title), 0, 5000));
+
+		ArrayList<RadioButton> currentViews = solo.getCurrentViews(RadioButton.class);
+		assertTrue("Not enough screen options showing up", currentViews.size() == 3);
+		solo.clickOnRadioButton(2);
+		solo.clickOnText(solo.getString(R.string.ok));
+		solo.waitForActivity(ProjectActivity.class);
+
+		UiTestUtils.clickOnBottomBar(solo, R.id.button_play);
+		assertTrue("\"Cast not connected\" toast is not displayed",
+				solo.waitForText(solo.getString(R.string.cast_error_not_connected_msg), 0, 5000));
+		assertTrue("\"Cast to\" dialog not opened in 5 sec",
+				solo.waitForText(solo.getString(R.string.cast_device_selector_dialog_title), 0, 5000));
+
+		solo.clickOnView(solo.getView(R.id.cast_device_list_view, 0));
+		solo.sleep(5000);
+		UiTestUtils.clickOnBottomBar(solo, R.id.button_play);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonA = (ImageButton) solo.getView(R.id.gamepadButtonA);
+		solo.clickOnView(imageButtonA);
+		solo.sleep(2000);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonB = (ImageButton) solo.getView(R.id.gamepadButtonB);
+		solo.clickLongOnView(imageButtonB);
+		solo.sleep(2500);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonLeft = (ImageButton) solo.getView(R.id.gamepadButtonLeft);
+		solo.clickLongOnView(imageButtonLeft, 2000);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonRight = (ImageButton) solo.getView(R.id.gamepadButtonRight);
+		solo.clickLongOnView(imageButtonRight, 2000);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonUp = (ImageButton) solo.getView(R.id.gamepadButtonUp);
+		solo.clickLongOnView(imageButtonUp, 1500);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonDown = (ImageButton) solo.getView(R.id.gamepadButtonDown);
+		solo.clickLongOnView(imageButtonDown, 1500);
+		solo.waitForView(ImageButton.class);
+		ImageButton imageButtonPause = (ImageButton) solo.getView(R.id.gamepadPauseButton);
+		solo.clickOnView(imageButtonPause);
+		solo.waitForText(solo.getString(R.string.stage_dialog_back));
+		solo.clickOnText(solo.getString(R.string.stage_dialog_back));
 	}
 }
