@@ -34,8 +34,10 @@ import android.preference.PreferenceManager;
 import android.preference.PreferenceScreen;
 
 import org.catrobat.catroid.BuildConfig;
+import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.common.DroneConfigPreference;
+import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.devices.mindstorms.nxt.sensors.NXTSensor;
 
 public class SettingsActivity extends PreferenceActivity {
@@ -47,6 +49,8 @@ public class SettingsActivity extends PreferenceActivity {
 	public static final String SETTINGS_SHOW_ARDUINO_BRICKS = "setting_arduino_bricks";
 	public static final String SETTINGS_PARROT_AR_DRONE_CATROBAT_TERMS_OF_SERVICE_ACCEPTED_PERMANENTLY = "setting_parrot_ar_drone_catrobat_terms_of_service_accepted_permanently";
 	public static final String SETTINGS_CAST_GLOBALLY_ENABLED = "setting_cast_globally_enabled";
+	public static final String SETTINGS_CAST_FOR_CURRENT_PROJECT_ENABLED = "setting_cast_current_project_cast_enabled";
+	public static final String SETTINGS_CAST_PROGRAM_SPECIFIC_HINT = "setting_cast_program_specific_hint";
 	PreferenceScreen screen = null;
 
 	public static final String NXT_SENSOR_1 = "setting_mindstorms_nxt_sensor_1";
@@ -71,6 +75,7 @@ public class SettingsActivity extends PreferenceActivity {
 		updateActionBar();
 
 		setDronePreferences();
+		initCastPreferences();
 
 		CheckBoxPreference preference = (CheckBoxPreference) findPreference(SETTINGS_SHOW_PARROT_AR_DRONE_BRICKS);
 		preference.setOnPreferenceChangeListener(new Preference.OnPreferenceChangeListener() {
@@ -114,6 +119,32 @@ public class SettingsActivity extends PreferenceActivity {
 			CheckBoxPreference globalCastPreference = (CheckBoxPreference) findPreference(SETTINGS_CAST_GLOBALLY_ENABLED);
 			globalCastPreference.setEnabled(false);
 			screen.removePreference(globalCastPreference);
+		}
+	}
+
+	private void initCastPreferences() {
+
+		final Project currentProject = ProjectManager.getInstance().getCurrentProject();
+
+		Boolean projectSpecificSettingsEnabled = (currentProject != null && isCastSharedPreferenceEnabled(this)
+				&& currentProject.islandscapeMode());
+
+		final CheckBoxPreference checkboxPreference = (CheckBoxPreference) findPreference(SETTINGS_CAST_FOR_CURRENT_PROJECT_ENABLED);
+		checkboxPreference.setEnabled(projectSpecificSettingsEnabled);
+		if (currentProject != null) {
+
+			if (!currentProject.islandscapeMode()) {
+				checkboxPreference.setSummary("Currently only landscape projects can be cast enabled.");
+			}
+
+			checkboxPreference.setChecked(currentProject.isCastProject());
+			checkboxPreference.setOnPreferenceClickListener(new Preference.OnPreferenceClickListener() {
+				@Override
+				public boolean onPreferenceClick(Preference preference) {
+					currentProject.getXmlHeader().setIsCastProject(checkboxPreference.isChecked());
+					return false;
+				}
+			});
 		}
 	}
 

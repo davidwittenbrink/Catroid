@@ -100,6 +100,30 @@
 
     </PreferenceScreen>
 
+    <PreferenceScreen
+        android:key="setting_cast_bricks"
+        android:summary="@string/cast_setting_screen_summary"
+        android:title="@string/cast_setting_screen_title">
+
+        <CheckBoxPreference
+            android:defaultValue="true"
+            android:key="setting_cast_globally_enabled"
+            android:summary="@string/preference_description_cast_feature_globally_enabled"
+            android:title="@string/preference_title_cast_feature_globally_enabled" />
+
+        <PreferenceCategory android:title="Cast project settings" >
+            <Preference
+                android:summary="@string/preference_title_cast_properties_setting_description"
+                android:key="setting_cast_program_specific_hint" />
+
+            <CheckBoxPreference
+                android:key="setting_cast_current_project_cast_enabled"
+                android:summary="@string/cast_current_project_cast_enabled_setting_summary"
+                android:title="@string/cast_current_project_cast_enabled_setting_title" />
+        </PreferenceCategory>
+
+    </PreferenceScreen>
+
      <CheckBoxPreference
         android:defaultValue="false"
         android:key="setting_arduino_bricks"
@@ -111,11 +135,5 @@
         android:key="setting_enable_phiro_bricks"
         android:summary="@string/preference_description_phiro_bricks"
         android:title="@string/preference_title_enable_phiro_bricks" />
-
-    <CheckBoxPreference
-        android:defaultValue="true"
-        android:key="setting_cast_globally_enabled"
-        android:summary="@string/preference_description_cast_feature_globally_enabled"
-        android:title="@string/preference_title_cast_feature_globally_enabled" />
 
 </PreferenceScreen>

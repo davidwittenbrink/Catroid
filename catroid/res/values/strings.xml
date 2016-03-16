@@ -743,6 +743,7 @@
     <string name="preference_disable_nxt_info_dialog_description">Program specific NXT settings are not shown when opening a program.</string>
     <string name="preference_title_mindstorms_nxt_sensors_description">The mapping of NXT sensors to ports is program specific and can only be configured for opened programs!</string>
     <string name="preference_title_drone_properties_setting_description">The selection of drone configuration properties is program specific and can only be configured within the program.</string>
+    <string name="preference_title_cast_properties_setting_description">These cast settings are program specific and can only be configured from within the program.</string>
     <string name="lego_nxt_sensor_config_info_text">The current program uses Lego Mindstorms NXT bricks or sensors. For proper functionality please connect the sensors to the robot as follows</string>
     <string name="nxt_port_1">Port 1</string>
     <string name="nxt_port_2">Port 2</string>
@@ -1071,6 +1072,10 @@
     <string name="cast_searching_for_cast_devices">Searching for cast devices</string>
     <string name="cast_trouble_finding_devices_tip">.\nNot seeing your device? Try turning your phone\'s WiFi off and on.</string>
     <string name="cast_connection_timout_msg">Connection timeout. Please try again.</string>
+    <string name="cast_current_project_cast_enabled_setting_summary">Make the current project run on your Chromecast or other cast device.</string>
+    <string name="cast_current_project_cast_enabled_setting_title">Current project cast enabled</string>
+    <string name="cast_setting_screen_title">Cast bricks</string>
+    <string name="cast_setting_screen_summary">Create projects for Chromecast and other cast devices</string>
     <!-- -->
 
 </resources>
