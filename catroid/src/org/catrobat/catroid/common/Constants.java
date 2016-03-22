@@ -29,7 +29,7 @@ public final class Constants {
 	// Reflection in testcases needed
 	// http://stackoverflow.com/questions/1615163/modifying-final-fields-in-java?answertab=votes#tab-top
 
-	public static final float CURRENT_CATROBAT_LANGUAGE_VERSION = Float.valueOf(0.97f);
+	public static final float CURRENT_CATROBAT_LANGUAGE_VERSION = Float.valueOf(0.98f);
 
 	public static final String REMOTE_DISPLAY_APP_ID = "CEBB9229";
 	public static final int CAST_CONNECTION_TIMEOUT = 5000; //in milliseconds
@@ -75,6 +75,7 @@ public final class Constants {
 	public static final String CAMERA_FLASH = "CAMERA_FLASH";
 	public static final String VIBRATOR = "VIBRATOR";
 	public static final String FACE_DETECTION = "FACE_DETECTION";
+	public static final String NFC = "NFC";
 
 	public static final int NO_POSITION = -1;
 
@@ -83,6 +84,9 @@ public final class Constants {
 	public static final String BROADCAST_NOTIFY_ACTION = "broadcast_notify";
 	public static final String START_SCRIPT = "start_script";
 	public static final String BROADCAST_SCRIPT = "broadcast_script";
+	public static final String RASPI_SCRIPT = "raspi_pinchange_script";
+	public static final String RASPI_BROADCAST_PREFIX = "#RASPI#";
+	public static final String RASPI_BROADCAST_INTERRUPT_PREFIX = RASPI_BROADCAST_PREFIX + "interrupt ";
 	public static final String OPENING_BRACE = "(";
 	public static final String CLOSING_BRACE = ")";
 
@@ -119,6 +123,8 @@ public final class Constants {
 	public static final String NO_FACEBOOK_LOCALE = "NO_FACEBOOK_LOCALE";
 	public static final String FACEBOOK_EMAIL = "FACEBOOK_EMAIL";
 	public static final String NO_FACEBOOK_EMAIL = "NO_FACEBOOK_EMAIL";
+	public static final String JSON_ERROR_CODE = "errorCode";
+	public static final int ERROR_CODE_FACEBOOK_SESSION_EXPIRED = 190;
 
 	public static final String GOOGLE_ID = "GOOGLE_ID";
 	public static final String NO_GOOGLE_ID = "NO_GOOGLE_ID";

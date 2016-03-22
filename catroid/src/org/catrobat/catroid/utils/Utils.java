@@ -50,18 +50,21 @@ import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.utils.GdxNativesLoader;
 import com.badlogic.gdx.utils.GdxRuntimeException;
+import com.facebook.AccessToken;
 
 import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.common.Constants;
 import org.catrobat.catroid.common.DefaultProjectHandler;
 import org.catrobat.catroid.common.LookData;
+import org.catrobat.catroid.common.NfcTagData;
 import org.catrobat.catroid.common.ScreenValues;
 import org.catrobat.catroid.common.SoundInfo;
 import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.exceptions.ProjectException;
 import org.catrobat.catroid.io.StorageHandler;
+import org.catrobat.catroid.transfers.LogoutTask;
 import org.catrobat.catroid.ui.WebViewActivity;
 import org.catrobat.catroid.ui.controller.BackPackListManager;
 import org.catrobat.catroid.ui.dialogs.CustomAlertDialogBuilder;
@@ -347,7 +350,7 @@ public final class Utils {
 		if (ProjectManager.getInstance().getCurrentProject() == null) {
 
 			if (UtilFile.getProjectNames(new File(Constants.DEFAULT_ROOT)).size() == 0) {
-				Log.i("Utils", "Somebody deleted all projects in the file-system");
+				Log.i(TAG, "Somebody deleted all projects in the file-system");
 				ProjectManager.getInstance().initializeDefaultProject(context);
 			}
 
@@ -382,6 +385,26 @@ public final class Utils {
 			return searchForNonExistingObjectNameInCurrentProgram(name, ++nextNumber);
 		}
 
+		return newName;
+	}
+
+	public static String getUniqueNfcTagName(String name) {
+		return searchForNonExistingNfcTagName(name, 0);
+	}
+
+	private static String searchForNonExistingNfcTagName(String name, int nextNumber) {
+		String newName;
+		List<NfcTagData> nfcTagDataList = ProjectManager.getInstance().getCurrentSprite().getNfcTagList();
+		if (nextNumber == 0) {
+			newName = name;
+		} else {
+			newName = name + nextNumber;
+		}
+		for (NfcTagData nfcTagData : nfcTagDataList) {
+			if (nfcTagData.getNfcTagName().equals(newName)) {
+				return searchForNonExistingNfcTagName(name, ++nextNumber);
+			}
+		}
 		return newName;
 	}
 
@@ -614,12 +637,8 @@ public final class Utils {
 	public static void logoutUser(Context context) {
 		SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
 		String userName = sharedPreferences.getString(Constants.USERNAME, Constants.NO_USERNAME);
-
-		/* TOKEN LOGIN
-		if (isNetworkAvailable(context)) {
-			ServerCalls.getInstance().logoutCallToServer(userName);
-		}
-		*/
+		LogoutTask logoutTask = new LogoutTask(context, userName);
+		logoutTask.execute();
 
 		sharedPreferences.edit().putString(Constants.TOKEN, Constants.NO_TOKEN).commit();
 		sharedPreferences.edit().putString(Constants.USERNAME, Constants.NO_USERNAME).commit();
@@ -629,6 +648,7 @@ public final class Utils {
 		sharedPreferences.edit().putString(Constants.FACEBOOK_USERNAME, Constants.NO_FACEBOOK_USERNAME).commit();
 		sharedPreferences.edit().putString(Constants.FACEBOOK_ID, Constants.NO_FACEBOOK_ID).commit();
 		sharedPreferences.edit().putString(Constants.FACEBOOK_LOCALE, Constants.NO_FACEBOOK_LOCALE).commit();
+		AccessToken.setCurrentAccessToken(null);
 
 		sharedPreferences.edit().putString(Constants.GOOGLE_EXCHANGE_CODE, Constants.NO_GOOGLE_EXCHANGE_CODE).commit();
 		sharedPreferences.edit().putString(Constants.GOOGLE_EMAIL, Constants.NO_GOOGLE_EMAIL).commit();
@@ -638,6 +658,8 @@ public final class Utils {
 		sharedPreferences.edit().putString(Constants.GOOGLE_ID_TOKEN, Constants.NO_GOOGLE_ID_TOKEN).commit();
 
 		WebViewActivity.clearCookies(context);
+
+		ToastUtil.showSuccess(context, R.string.logout_successful);
 	}
 
 	public static boolean isUserLoggedIn(Context context) {

@@ -31,6 +31,8 @@ import org.catrobat.catroid.common.ServiceProvider;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.content.bricks.Brick;
 import org.catrobat.catroid.devices.arduino.Arduino;
+import org.catrobat.catroid.devices.raspberrypi.RPiSocketConnection;
+import org.catrobat.catroid.devices.raspberrypi.RaspberryPiService;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -388,6 +390,16 @@ public class FormulaElement implements Serializable {
 						return 0d;
 					}
 					return arduinoAnalog.getAnalogArduinoPin(doubleValueOfLeftChild.intValue());
+				}
+				break;
+			case RASPIDIGITAL:
+				RPiSocketConnection connection = RaspberryPiService.getInstance().connection;
+				int pin = doubleValueOfLeftChild.intValue();
+				// TODO check if pin is
+				try {
+					return connection.getPin(pin) ? 1d : 0d;
+				} catch (Exception e) {
+					Log.e(getClass().getSimpleName(), "RPi: exception during getPin: " + e);
 				}
 				break;
 			case LIST_ITEM:
@@ -912,11 +924,29 @@ public class FormulaElement implements Serializable {
 				case ARDUINODIGITAL:
 					resources |= Brick.BLUETOOTH_SENSORS_ARDUINO;
 					break;
+				case RASPIDIGITAL:
+					resources |= Brick.SOCKET_RASPI;
+					break;
 			}
 		}
 		if (type == ElementType.SENSOR) {
 			Sensors sensor = Sensors.getSensorByValue(value);
 			switch (sensor) {
+				case X_ACCELERATION:
+				case Y_ACCELERATION:
+				case Z_ACCELERATION:
+					resources |= Brick.SENSOR_ACCELERATION;
+					break;
+
+				case X_INCLINATION:
+				case Y_INCLINATION:
+					resources |= Brick.SENSOR_INCLINATION;
+					break;
+
+				case COMPASS_DIRECTION:
+					resources |= Brick.SENSOR_COMPASS;
+					break;
+
 				case FACE_DETECTED:
 				case FACE_SIZE:
 				case FACE_X_POSITION:
@@ -948,42 +978,20 @@ public class FormulaElement implements Serializable {
 				case GAMEPAD_RIGHT_PRESSED:
 					resources |= Brick.CAST_REQUIRED;
 					break;
-				default:
-			}
-		}
-		if (type == ElementType.SENSOR) {
-			Sensors sensor = Sensors.getSensorByValue(value);
-			switch (sensor) {
+
 				case DRONE_BATTERY_STATUS:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_CAMERA_READY:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_EMERGENCY_STATE:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_FLYING:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_INITIALIZED:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_NUM_FRAMES:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_RECORD_READY:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_RECORDING:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_USB_ACTIVE:
-					resources |= Brick.ARDRONE_SUPPORT;
-					break;
 				case DRONE_USB_REMAINING_TIME:
 					resources |= Brick.ARDRONE_SUPPORT;
 					break;
+
 				default:
 			}
 		}

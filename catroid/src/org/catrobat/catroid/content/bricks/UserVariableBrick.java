@@ -25,7 +25,10 @@ package org.catrobat.catroid.content.bricks;
 
 import android.widget.Spinner;
 
+import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.content.Project;
+import org.catrobat.catroid.content.Sprite;
+import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.UserVariable;
 import org.catrobat.catroid.ui.adapter.UserVariableAdapterWrapper;
 import org.catrobat.catroid.ui.dialogs.NewDataDialog;
@@ -34,7 +37,6 @@ public abstract class UserVariableBrick extends FormulaBrick implements NewDataD
 
 	protected UserVariable userVariable;
 	public boolean inUserBrick = false;
-
 	protected transient BackPackedData backPackedData;
 
 	private void updateUserVariableIfDeleted(UserVariableAdapterWrapper userVariableAdapterWrapper) {
@@ -84,15 +86,6 @@ public abstract class UserVariableBrick extends FormulaBrick implements NewDataD
 		return backPackedData;
 	}
 
-	public void setBackPackedData(Project project, UserVariable userVariable, Integer userVariableType) {
-		if (backPackedData == null) {
-			backPackedData = new BackPackedData();
-		}
-		this.backPackedData.project = project;
-		this.backPackedData.userVariable = userVariable;
-		this.backPackedData.userVariableType = userVariableType;
-	}
-
 	public void setBackPackedData(BackPackedData backPackedData) {
 		this.backPackedData = backPackedData;
 	}
@@ -112,5 +105,61 @@ public abstract class UserVariableBrick extends FormulaBrick implements NewDataD
 				this.project = backPackedData.project;
 			}
 		}
+	}
+
+	protected void updateUserVariableReference(Project into, Project from) {
+		UserVariable variable;
+		if (from.existProjectVariable(userVariable)) {
+			variable = into.getProjectVariableWithName(userVariable.getName());
+			if (variable == null) {
+				variable = into.getDataContainer().addProjectUserVariable(userVariable.getName());
+			}
+		} else {
+			Sprite sprite = from.getSpriteByUserVariable(userVariable);
+			if (sprite == null || !from.existSpriteVariable(userVariable, sprite)) {
+				return;
+			}
+			variable = into.getDataContainer().addSpriteVariableIfDontExist(userVariable.getName(),
+					into.getSpriteBySpriteName(sprite));
+		}
+		if (variable != null) {
+			userVariable = variable;
+		}
+	}
+
+	@Override
+	public boolean isEqualBrick(Brick brick, Project mergeResult, Project current) {
+		if (!super.isEqualBrick(brick, mergeResult, current)) {
+			return false;
+		}
+		UserVariable first = this.getUserVariable();
+		UserVariable second = ((UserVariableBrick) brick).getUserVariable();
+		if (!first.getName().equals(second.getName())) {
+			return false;
+		}
+		boolean firstIsProjectVariable = mergeResult.getDataContainer().existProjectVariable(first);
+		boolean secondIsProjectVariable = current.getDataContainer().existProjectVariable(second);
+
+		if ((firstIsProjectVariable && secondIsProjectVariable)
+				|| (!firstIsProjectVariable && !secondIsProjectVariable)) {
+			return true;
+		}
+		return false;
+	}
+
+	@Override
+	public void storeDataForBackPack(Sprite sprite) {
+		Project currentProject = ProjectManager.getInstance().getCurrentProject();
+		Integer type = DataContainer.USER_DATA_EMPTY;
+		if (getUserVariable() != null) {
+			type = currentProject.getDataContainer()
+					.getTypeOfUserVariable(getUserVariable().getName(), ProjectManager
+							.getInstance().getCurrentSprite());
+		}
+		if (backPackedData == null) {
+			backPackedData = new BackPackedData();
+		}
+		this.backPackedData.project = currentProject;
+		this.backPackedData.userVariableType = type;
 	}
 }

@@ -167,7 +167,6 @@ public final class CameraManager implements DeviceCameraControl, Camera.PreviewC
 	}
 
 	private boolean createCamera() {
-
 		if (camera != null) {
 			return false;
 		}
@@ -185,7 +184,7 @@ public final class CameraManager implements DeviceCameraControl, Camera.PreviewC
 			int previewHeight = 0;
 			int previewWidth = 0;
 			for (int i = 0; i < previewSizes.size(); i++) {
-				Log.d("Available Preview Size", "Supported size: " + previewSizes.get(i).width + " x " + previewSizes
+				Log.d(TAG, "Supported size: " + previewSizes.get(i).width + " x " + previewSizes
 						.get(i).height);
 				if (previewSizes.get(i).height > previewHeight) {
 					previewHeight = previewSizes.get(i).height;
@@ -340,6 +339,10 @@ public final class CameraManager implements DeviceCameraControl, Camera.PreviewC
 
 	@Override
 	public void pausePreview() {
+		if (state == CameraState.previewRunning) {
+			wasRunning = true;
+		}
+
 		stopPreview();
 		state = CameraState.previewPaused;
 	}
@@ -376,10 +379,6 @@ public final class CameraManager implements DeviceCameraControl, Camera.PreviewC
 				|| state == CameraState.stopped
 				|| state == CameraState.notUsed) {
 			return;
-		}
-
-		if (state == CameraState.previewRunning) {
-			wasRunning = true;
 		}
 
 		Runnable r = new Runnable() {
@@ -455,7 +454,7 @@ public final class CameraManager implements DeviceCameraControl, Camera.PreviewC
 			currentCameraID = cameraId;
 
 			if (FlashUtil.isOn() && !isFacingBack()) {
-				Log.w("FlashError", "destroy Stage because flash isOn and front Camera was chosen");
+				Log.w(TAG, "destroy Stage because flash isOn and front Camera was chosen");
 				CameraManager.getInstance().destroyStage();
 				return;
 			}

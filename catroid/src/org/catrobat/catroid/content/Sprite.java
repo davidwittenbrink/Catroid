@@ -34,6 +34,7 @@ import org.catrobat.catroid.common.BroadcastSequenceMap;
 import org.catrobat.catroid.common.Constants;
 import org.catrobat.catroid.common.FileChecksumContainer;
 import org.catrobat.catroid.common.LookData;
+import org.catrobat.catroid.common.NfcTagData;
 import org.catrobat.catroid.common.SoundInfo;
 import org.catrobat.catroid.content.actions.ExtendedActions;
 import org.catrobat.catroid.content.bricks.Brick;
@@ -41,6 +42,7 @@ import org.catrobat.catroid.content.bricks.PlaySoundBrick;
 import org.catrobat.catroid.content.bricks.SetLookBrick;
 import org.catrobat.catroid.content.bricks.UserBrick;
 import org.catrobat.catroid.content.bricks.UserScriptDefinitionBrick;
+import org.catrobat.catroid.content.bricks.WhenNfcBrick;
 import org.catrobat.catroid.formulaeditor.DataContainer;
 import org.catrobat.catroid.formulaeditor.UserVariable;
 
@@ -62,6 +64,7 @@ public class Sprite implements Serializable, Cloneable {
 	private List<LookData> lookList = new ArrayList<>();
 	private List<SoundInfo> soundList = new ArrayList<>();
 	private List<UserBrick> userBricks = new ArrayList<>();
+	private List<NfcTagData> nfcTagList = new ArrayList<>();
 	private transient int newUserBrickNext = 1;
 	public transient boolean isBackpackSprite = false;
 	public transient boolean isBackgroundSprite = false;
@@ -151,6 +154,16 @@ public class Sprite implements Serializable, Cloneable {
 		return result;
 	}
 
+	public List<WhenNfcBrick> getNfcBrickList() {
+		List<WhenNfcBrick> result = new ArrayList<>();
+		for (Brick brick : getAllBricks()) {
+			if (brick instanceof WhenNfcBrick) {
+				result.add((WhenNfcBrick) brick);
+			}
+		}
+		return result;
+	}
+
 	public void resetSprite() {
 		look = new Look(this);
 		for (LookData lookData : lookList) {
@@ -204,6 +217,7 @@ public class Sprite implements Serializable, Cloneable {
 					BroadcastHandler.getStringActionMap().put(actionName, sequenceAction);
 				}
 			}
+
 			if (script instanceof BroadcastScript) {
 				BroadcastScript broadcastScript = (BroadcastScript) script;
 				SequenceAction action = createActionSequence(broadcastScript);
@@ -284,6 +298,12 @@ public class Sprite implements Serializable, Cloneable {
 			newScript.setBrick(deepClone.getDefinitionBrick());
 			deepClone.getDefinitionBrick().setUserScript((StartScript) newScript);
 		}
+
+		List<NfcTagData> cloneNfcTagList = new ArrayList<NfcTagData>();
+		for (NfcTagData element : this.nfcTagList) {
+			cloneNfcTagList.add(element.clone());
+		}
+		cloneSprite.nfcTagList = cloneNfcTagList;
 
 		//The scripts have to be the last copied items
 		List<Script> cloneScriptList = new ArrayList<Script>();
@@ -366,6 +386,23 @@ public class Sprite implements Serializable, Cloneable {
 		return sequence;
 	}
 
+	public void createWhenNfcScriptAction(String uid) {
+		ParallelAction whenParallelAction = ExtendedActions.parallel();
+		for (Script s : scriptList) {
+			if (s instanceof WhenNfcScript) {
+				WhenNfcScript whenNfcScript = (WhenNfcScript) s;
+				if (whenNfcScript.isMatchAll()
+						|| whenNfcScript.getNfcTag().getNfcTagUid().equals(uid)) {
+					SequenceAction sequence = createActionSequence(s);
+					whenParallelAction.addAction(sequence);
+				}
+			}
+		}
+		//TODO: quick fix for faulty behaviour - nfc action triggers again after touchevents
+		//look.setWhenParallelAction(whenParallelAction);
+		look.addAction(whenParallelAction);
+	}
+
 	public void pause() {
 		for (Script s : scriptList) {
 			s.setPaused(true);
@@ -439,8 +476,34 @@ public class Sprite implements Serializable, Cloneable {
 		return lookList;
 	}
 
+	public boolean existLookDataByName(LookData look) {
+		for (LookData lookdata : lookList) {
+			if (lookdata.getLookName().equals(look.getLookName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean existLookDataByFileName(LookData look) {
+		for (LookData lookdata : lookList) {
+			if (lookdata.getLookFileName().equals(look.getLookFileName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void addLookData(LookData data) {
+		lookList.add(data);
+	}
+
 	public void setLookDataList(List<LookData> list) {
 		lookList = list;
+	}
+
+	public List<SoundInfo> getSoundList() {
+		return soundList;
 	}
 
 	public void setSoundList(List<SoundInfo> list) {
@@ -461,6 +524,14 @@ public class Sprite implements Serializable, Cloneable {
 		return resources;
 	}
 
+	public List<NfcTagData> getNfcTagList() {
+		return nfcTagList;
+	}
+
+	public void setNfcTagList(List<NfcTagData> list) {
+		nfcTagList = list;
+	}
+
 	public int getNextNewUserBrickId() {
 		return newUserBrickNext++;
 	}
@@ -470,10 +541,6 @@ public class Sprite implements Serializable, Cloneable {
 		return name;
 	}
 
-	public List<SoundInfo> getSoundList() {
-		return soundList;
-	}
-
 	public boolean containsLookData(LookData lookData) {
 		for (LookData lookOfSprite : lookList) {
 			if (lookOfSprite.equals(lookData)) {
@@ -481,5 +548,27 @@ public class Sprite implements Serializable, Cloneable {
 			}
 		}
 		return false;
+	}
+
+	public boolean existSoundInfoByName(SoundInfo sound) {
+		for (SoundInfo soundInfo : soundList) {
+			if (soundInfo.getTitle().equals(sound.getTitle())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public boolean existSoundInfoByFileName(SoundInfo sound) {
+		for (SoundInfo soundInfo : soundList) {
+			if (soundInfo.getSoundFileName().equals(sound.getSoundFileName())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	public void addSound(SoundInfo sound) {
+		soundList.add(sound);
 	}
 }

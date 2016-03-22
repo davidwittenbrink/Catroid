@@ -181,7 +181,7 @@ public class LookFragmentTest extends BaseActivityInstrumentationTestCase<MainMe
 		rename = solo.getString(R.string.rename);
 		renameDialogTitle = solo.getString(R.string.rename_look_dialog);
 		delete = solo.getString(R.string.delete);
-		unpack = solo.getString(R.string.unpacking);
+		unpack = solo.getString(R.string.unpack);
 		unpackAndKeep = solo.getString(R.string.unpack_keep);
 		backpack = solo.getString(R.string.backpack);
 		backpackAdd = solo.getString(R.string.backpack_add);
@@ -353,14 +353,14 @@ public class LookFragmentTest extends BaseActivityInstrumentationTestCase<MainMe
 		assertNotNull("Could not get Adapter", adapter);
 		clickOnContextMenuItem(FIRST_TEST_LOOK_NAME, solo.getString(R.string.backpack_add));
 		solo.sleep(TIME_TO_WAIT_BACKPACK);
-		clickOnContextMenuItem(firstTestLookNamePacked, solo.getString(R.string.unpacking));
+		clickOnContextMenuItem(firstTestLookNamePacked, solo.getString(R.string.unpack));
 		solo.waitForDialogToClose(TIME_TO_WAIT_BACKPACK);
 
 		solo.sleep(TIME_TO_WAIT_BACKPACK);
 		assertTrue("Look wasn't unpacked!", solo.waitForText(firstTestLookNamePackedAndUnpacked, 0, TIME_TO_WAIT));
 		clickOnContextMenuItem(SECOND_TEST_LOOK_NAME, solo.getString(R.string.backpack_add));
 		solo.sleep(TIME_TO_WAIT_BACKPACK);
-		clickOnContextMenuItem(secondTestLookNamePacked, solo.getString(R.string.unpacking));
+		clickOnContextMenuItem(secondTestLookNamePacked, solo.getString(R.string.unpack));
 		solo.waitForDialogToClose(TIME_TO_WAIT_BACKPACK);
 
 		solo.sleep(TIME_TO_WAIT_BACKPACK);
@@ -735,7 +735,7 @@ public class LookFragmentTest extends BaseActivityInstrumentationTestCase<MainMe
 		Sprite firstSprite = projectManager.getCurrentProject().getSpriteList().get(0);
 		LookData lookToDelete = firstSprite.getLookDataList().get(1);
 
-		Log.d("TEST", "Look to delete: " + lookToDelete.getLookName());
+		Log.d(TAG, "Look to delete: " + lookToDelete.getLookName());
 
 		String testLookName = SECOND_TEST_LOOK_NAME;
 		assertEquals("The two names should be equal", testLookName, lookToDelete.getLookName());
@@ -756,7 +756,7 @@ public class LookFragmentTest extends BaseActivityInstrumentationTestCase<MainMe
 		assertEquals("New count is not correct - one look should be deleted", 1, newCount);
 		assertEquals("Count of the lookDataList is not correct", newCount, lookDataList.size());
 
-		Log.d("LookFragmentTest", "path: " + lookToDelete.getAbsolutePath());
+		Log.d(TAG, "path: " + lookToDelete.getAbsolutePath());
 		File deletedFile = new File(lookToDelete.getAbsolutePath());
 		assertFalse("File should be deleted", deletedFile.exists());
 	}

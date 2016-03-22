@@ -57,6 +57,7 @@ import java.net.URLDecoder;
 
 @SuppressLint("SetJavaScriptEnabled")
 public class WebViewActivity extends BaseActivity {
+	private static final String TAG = WebViewActivity.class.getSimpleName();
 
 	public static final String INTENT_PARAMETER_URL = "url";
 	public static final String ANDROID_APPLICATION_EXTENSION = ".apk";
@@ -208,7 +209,7 @@ public class WebViewActivity extends BaseActivity {
 		}
 
 		private boolean checkIfWebViewVisitExternalWebsite(String url) {
-			if (url.contains(Constants.BASE_URL_HTTPS) || url.contains(Constants.CATROBAT_ABOUT_URL) || url.contains(Constants.LIBRARY_BASE_URL)) {
+			if (url.contains(Constants.BASE_URL_HTTPS) || url.contains(Constants.LIBRARY_BASE_URL)) {
 				return false;
 			}
 			return true;
@@ -256,7 +257,7 @@ public class WebViewActivity extends BaseActivity {
 		try {
 			mediaName = URLDecoder.decode(mediaName, "UTF-8");
 		} catch (UnsupportedEncodingException e) {
-			Log.e("WebViewActivity", "Could not decode program name: " + mediaName, e);
+			Log.e(TAG, "Could not decode program name: " + mediaName, e);
 			return null;
 		}
 		return mediaName;
@@ -286,7 +287,8 @@ public class WebViewActivity extends BaseActivity {
 	}
 
 	//taken from http://stackoverflow.com/a/28998241/
-	@SuppressWarnings({"deprecation", "NewApi"})
+	@SuppressWarnings("deprecated")
+	@SuppressLint("NewApi")
 	public static void clearCookies(Context context) {
 		if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.LOLLIPOP_MR1) {
 			CookieSyncManager cookieSyncMngr = CookieSyncManager.createInstance(context);

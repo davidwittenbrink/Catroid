@@ -37,6 +37,7 @@ import org.catrobat.catroid.content.bricks.Brick;
 import org.catrobat.catroid.content.bricks.BroadcastBrick;
 import org.catrobat.catroid.content.bricks.BroadcastReceiverBrick;
 import org.catrobat.catroid.content.bricks.BroadcastWaitBrick;
+import org.catrobat.catroid.content.bricks.CameraBrick;
 import org.catrobat.catroid.content.bricks.ChangeBrightnessByNBrick;
 import org.catrobat.catroid.content.bricks.ChangeSizeByNBrick;
 import org.catrobat.catroid.content.bricks.ChangeTransparencyByNBrick;
@@ -87,6 +88,9 @@ import org.catrobat.catroid.content.bricks.PlaySoundBrick;
 import org.catrobat.catroid.content.bricks.PointInDirectionBrick;
 import org.catrobat.catroid.content.bricks.PointInDirectionBrick.Direction;
 import org.catrobat.catroid.content.bricks.PointToBrick;
+import org.catrobat.catroid.content.bricks.RaspiIfLogicBeginBrick;
+import org.catrobat.catroid.content.bricks.RaspiPwmBrick;
+import org.catrobat.catroid.content.bricks.RaspiSendDigitalValueBrick;
 import org.catrobat.catroid.content.bricks.RepeatBrick;
 import org.catrobat.catroid.content.bricks.ReplaceItemInUserListBrick;
 import org.catrobat.catroid.content.bricks.ScriptBrick;
@@ -106,9 +110,10 @@ import org.catrobat.catroid.content.bricks.TurnLeftBrick;
 import org.catrobat.catroid.content.bricks.TurnRightBrick;
 import org.catrobat.catroid.content.bricks.UserBrick;
 import org.catrobat.catroid.content.bricks.VibrationBrick;
-import org.catrobat.catroid.content.bricks.VideoBrick;
 import org.catrobat.catroid.content.bricks.WaitBrick;
 import org.catrobat.catroid.content.bricks.WhenBrick;
+import org.catrobat.catroid.content.bricks.WhenNfcBrick;
+import org.catrobat.catroid.content.bricks.WhenRaspiPinChangedBrick;
 import org.catrobat.catroid.content.bricks.WhenGampadButtonBrick;
 import org.catrobat.catroid.content.bricks.WhenStartedBrick;
 import org.catrobat.catroid.formulaeditor.Formula;
@@ -157,6 +162,8 @@ public class CategoryBricksFactory {
 			tempList = setupDroneCategoryList();
 		} else if (category.equals(context.getString(R.string.category_phiro))) {
 			tempList = setupPhiroProCategoryList();
+		} else if (category.equals(context.getString(R.string.category_raspi))) {
+			tempList = setupRaspiCategoryList();
 		} else if (category.equals(context.getString(R.string.category_cast))) {
 			tempList = setupChromecastCategoryList();
 		}
@@ -188,7 +195,7 @@ public class CategoryBricksFactory {
 
 		controlBrickList.add(new NoteBrick(context.getString(R.string.brick_note_default_value)));
 		controlBrickList.add(new ForeverBrick());
-		FormulaElement defaultIf = new FormulaElement(FormulaElement.ElementType.OPERATOR, "<", null);
+		FormulaElement defaultIf = new FormulaElement(FormulaElement.ElementType.OPERATOR, Operators.SMALLER_THAN.toString(), null);
 		defaultIf.setLeftChild(new FormulaElement(ElementType.NUMBER, "1", null));
 		defaultIf.setRightChild(new FormulaElement(ElementType.NUMBER, "2", null));
 		controlBrickList.add(new IfLogicBeginBrick(new Formula(defaultIf)));
@@ -196,6 +203,10 @@ public class CategoryBricksFactory {
 
 		if (SettingsActivity.isPhiroSharedPreferenceEnabled(context)) {
 			controlBrickList.add(new PhiroIfLogicBeginBrick());
+		}
+
+		if (SettingsActivity.isNfcSharedPreferenceEnabled(context)) {
+			controlBrickList.add(new WhenNfcBrick());
 		}
 
 		if (ProjectManager.getInstance().getCurrentProject().isCastProject()) {
@@ -323,7 +334,7 @@ public class CategoryBricksFactory {
 
 		looksBrickList.add(new SetLookBrick());
 		looksBrickList.add(new NextLookBrick());
-		looksBrickList.add(new VideoBrick());
+		looksBrickList.add(new CameraBrick());
 		looksBrickList.add(new ChooseCameraBrick());
 		looksBrickList.add(new SetSizeToBrick(BrickValues.SET_SIZE_TO));
 		looksBrickList.add(new ChangeSizeByNBrick(BrickValues.CHANGE_SIZE_BY));
@@ -424,6 +435,17 @@ public class CategoryBricksFactory {
 		arduinoBrickList.add(new ArduinoSendPWMValueBrick(BrickValues.ARDUINO_PWM_INITIAL_PIN_NUMBER, BrickValues.ARDUINO_PWM_INITIAL_PIN_VALUE));
 
 		return arduinoBrickList;
+	}
+
+	private List<Brick> setupRaspiCategoryList() {
+		List<Brick> raspiBrickList = new ArrayList<Brick>();
+		raspiBrickList.add(new WhenRaspiPinChangedBrick(null));
+		raspiBrickList.add(new RaspiSendDigitalValueBrick(BrickValues.RASPI_DIGITAL_INITIAL_PIN_NUMBER, BrickValues.RASPI_DIGITAL_INITIAL_PIN_VALUE));
+		raspiBrickList.add(new RaspiPwmBrick(BrickValues.RASPI_DIGITAL_INITIAL_PIN_NUMBER, BrickValues
+				.RASPI_PWM_INITIAL_FREQUENCY, BrickValues.RASPI_PWM_INITIAL_PERCENTAGE));
+		raspiBrickList.add(new RaspiIfLogicBeginBrick(BrickValues.RASPI_DIGITAL_INITIAL_PIN_NUMBER));
+
+		return raspiBrickList;
 	}
 
 	private boolean isBackground(Sprite sprite) {

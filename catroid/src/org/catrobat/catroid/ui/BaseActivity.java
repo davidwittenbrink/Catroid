@@ -33,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 
+import org.catrobat.catroid.ProjectManager;
 import org.catrobat.catroid.R;
 import org.catrobat.catroid.cast.CastManager;
 import org.catrobat.catroid.ui.controller.BackPackListManager;
@@ -126,6 +127,9 @@ public class BaseActivity extends Activity {
 			case R.id.menu_logout:
 				Utils.logoutUser(this);
 				return true;
+			case R.id.menu_login:
+				ProjectManager.getInstance().showSignInDialog(this, false);
+				return true;
 			case R.id.cast_button:
 				CastManager.getInstance().openDeviceSelectorOrDisconnectDialog();
 				break;
@@ -179,7 +183,9 @@ public class BaseActivity extends Activity {
 
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem logout = baseMenu.findItem(R.id.menu_logout);
+		MenuItem login = baseMenu.findItem(R.id.menu_login);
 		logout.setVisible(Utils.isUserLoggedIn(this));
+		login.setVisible(!Utils.isUserLoggedIn(this));
 		return true;
 	}
 }

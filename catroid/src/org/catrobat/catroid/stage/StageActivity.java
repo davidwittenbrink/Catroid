@@ -23,9 +23,12 @@
 package org.catrobat.catroid.stage;
 
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.PixelFormat;
+import android.nfc.NfcAdapter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.SurfaceView;
@@ -47,6 +50,7 @@ import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.facedetection.FaceDetectionHandler;
 import org.catrobat.catroid.formulaeditor.SensorHandler;
 import org.catrobat.catroid.io.StageAudioFocus;
+import org.catrobat.catroid.nfc.NfcHandler;
 import org.catrobat.catroid.ui.dialogs.CustomAlertDialogBuilder;
 import org.catrobat.catroid.ui.dialogs.StageDialog;
 import org.catrobat.catroid.utils.FlashUtil;
@@ -58,6 +62,8 @@ public class StageActivity extends AndroidApplication {
 	public static final int STAGE_ACTIVITY_FINISH = 7777;
 
 	private StageAudioFocus stageAudioFocus;
+	private PendingIntent pendingIntent;
+	private NfcAdapter nfcAdapter;
 	private StageDialog stageDialog;
 	private boolean resizePossible;
 
@@ -98,7 +104,16 @@ public class StageActivity extends AndroidApplication {
 		if (graphics.getView() instanceof SurfaceView) {
 			SurfaceView glView = (SurfaceView) graphics.getView();
 			glView.getHolder().setFormat(PixelFormat.TRANSLUCENT);
-			glView.setZOrderOnTop(true);
+		}
+
+		pendingIntent = PendingIntent.getActivity(this, 0,
+				new Intent(this, getClass()).addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP), 0);
+
+		nfcAdapter = NfcAdapter.getDefaultAdapter(this);
+		Log.d(TAG, "onCreate()");
+
+		if (nfcAdapter == null) {
+			Log.d(TAG, "could not get nfc adapter :(");
 		}
 
 		ServiceProvider.getService(CatroidService.BLUETOOTH_DEVICE_SERVICE).initialise();
@@ -106,6 +121,13 @@ public class StageActivity extends AndroidApplication {
 		stageAudioFocus = new StageAudioFocus(this);
 
 		CameraManager.getInstance().setStageActivity(this);
+	}
+
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		Log.d(TAG, "processIntent");
+		NfcHandler.processIntent(intent);
 	}
 
 	@Override
@@ -123,11 +145,18 @@ public class StageActivity extends AndroidApplication {
 
 	@Override
 	public void onPause() {
+		if (nfcAdapter != null) {
+			try {
+				nfcAdapter.disableForegroundDispatch(this);
+			} catch (IllegalStateException illegalStateException) {
+				Log.e(TAG, "Disabling NFC foreground dispatching went wrong!", illegalStateException);
+			}
+		}
 		SensorHandler.stopSensorListeners();
 		stageAudioFocus.releaseAudioFocus();
 		FlashUtil.pauseFlash();
 		FaceDetectionHandler.pauseFaceDetection();
-
+		CameraManager.getInstance().pausePreview();
 		CameraManager.getInstance().releaseCamera();
 		VibratorUtil.pauseVibrator();
 		super.onPause();
@@ -144,8 +173,10 @@ public class StageActivity extends AndroidApplication {
 		CameraManager.getInstance().resumePreviewAsync();
 
 		VibratorUtil.resumeVibrator();
-
 		SensorHandler.startSensorListener(this);
+		if (nfcAdapter != null) {
+			nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+		}
 
 		super.onResume();
 
@@ -153,6 +184,10 @@ public class StageActivity extends AndroidApplication {
 	}
 
 	public void pause() {
+		if (nfcAdapter != null) {
+			nfcAdapter.disableForegroundDispatch(this);
+		}
+
 		SensorHandler.stopSensorListeners();
 		stageListener.menuPause();
 		FlashUtil.pauseFlash();
@@ -174,6 +209,10 @@ public class StageActivity extends AndroidApplication {
 		CameraManager.getInstance().resumePreviewAsync();
 
 		ServiceProvider.getService(CatroidService.BLUETOOTH_DEVICE_SERVICE).start();
+
+		if (nfcAdapter != null) {
+			nfcAdapter.enableForegroundDispatch(this, pendingIntent, null, null);
+		}
 	}
 
 	public boolean getResizePossible() {

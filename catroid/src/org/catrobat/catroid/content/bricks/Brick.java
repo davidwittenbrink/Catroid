@@ -29,6 +29,7 @@ import android.widget.CheckBox;
 
 import com.badlogic.gdx.scenes.scene2d.actions.SequenceAction;
 
+import org.catrobat.catroid.content.Project;
 import org.catrobat.catroid.content.Sprite;
 import org.catrobat.catroid.ui.adapter.BrickAdapter;
 
@@ -54,7 +55,9 @@ public interface Brick extends Serializable, Cloneable {
 		PHIRO_SPEED, PHIRO_DURATION_IN_SECONDS, PHIRO_LIGHT_RED, PHIRO_LIGHT_GREEN, PHIRO_LIGHT_BLUE,
 		IF_PHIRO_SENSOR_CONDITION,
 
-		ARDUINO_ANALOG_PIN_VALUE, ARDUINO_ANALOG_PIN_NUMBER, ARDUINO_DIGITAL_PIN_VALUE, ARDUINO_DIGITAL_PIN_NUMBER
+		ARDUINO_ANALOG_PIN_VALUE, ARDUINO_ANALOG_PIN_NUMBER, ARDUINO_DIGITAL_PIN_VALUE, ARDUINO_DIGITAL_PIN_NUMBER,
+
+		RASPI_DIGITAL_PIN_VALUE, RASPI_DIGITAL_PIN_NUMBER, RASPI_PWM_PERCENTAGE, RASPI_PWM_FREQUENCY
 	}
 
 	//use bitwise | for using multiple ressources in a brick
@@ -62,17 +65,21 @@ public interface Brick extends Serializable, Cloneable {
 	//	public static final int SOUND_MANAGER = 0x1;
 	int TEXT_TO_SPEECH = 0x2;
 	int BLUETOOTH_LEGO_NXT = 0x4;
-	int BLUETOOTH_SENSORS_ARDUINO = 0x40;
+	//	public static final int BLUETOOTH_ARDUINO = 0x8;
+	int FACE_DETECTION = 0x10;
 	int ARDRONE_SUPPORT = 0x20;
+	int BLUETOOTH_SENSORS_ARDUINO = 0x40;
+	int SOCKET_RASPI = 0x80;
 	int CAMERA_FLASH = 0x100;
 	int VIBRATOR = 0x200;
 	int BLUETOOTH_PHIRO = 0x400;
 	int CAMERA_BACK = 0x800;
 	int CAMERA_FRONT = 0x1000;
+	int SENSOR_ACCELERATION = 0x2000;
+	int SENSOR_INCLINATION = 0x4000;
+	int SENSOR_COMPASS = 0x8000;
+	int NFC_ADAPTER = 0x10000;
 	int CAST_REQUIRED = 0x2000;
-
-	//	public static final int BLUETOOTH_ARDUINO = 0x8;
-	int FACE_DETECTION = 0x10;
 
 	List<SequenceAction> addActionToSequence(Sprite sprite, SequenceAction sequence);
 
@@ -110,4 +117,8 @@ public interface Brick extends Serializable, Cloneable {
 	void setAlpha(int alphaFull);
 
 	void enableAllViews(View view, boolean enable);
+
+	boolean isEqualBrick(Brick brick, Project mergeResult, Project current);
+
+	void storeDataForBackPack(Sprite sprite);
 }
